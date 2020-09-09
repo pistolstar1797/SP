@@ -1,0 +1,20 @@
+1.참/거짓을 판별하시오 
+a. weak symbol이 두개인 경우 앞의 것을 먼저 사용한다. 
+b. strong symbol이 두개인 경우 앞의 것을 먼저 사용한다. 
+c. 지역변수는 strong symbol이다. 
+d. weak symbol과 strong symbol이 있을 때 strong symbol을 사용한다. 
+
+2. Setjmp()/longjmp()가 사용되는 예제를 하나만 드시오 
+
+3. Library interpositioning을 compile time, link time, run time에 어떻게 하는지 설명하시오 
+
+4. Class B 의 갯수와 각각이 가질 수 있는 host의 갯수는? 
+
+5. Zombie process 어떻게 생기는지, 이를 어떻게 방지할 수 있는지 설명하시오. 
+
+6. TLB의 역할은 무엇이고 왜 일반적인 cache보다 hit ratio가 높은지 설명하시오. 
+
+7. File I/O에서 short count란 무엇인지 언제 일어나는지 설명하시오. 
+
+8. boundary tag가 무엇인지 언제 사용하는지 설명하시오
+TagAddTAG

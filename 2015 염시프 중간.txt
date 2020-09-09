@@ -1,0 +1,67 @@
+정답은 일부만 있습니다. 
+
+1. Executable file이 메모리에 올라갈 때 어떤 위치에 올라가게 될지는 미리 알 수 없다. 올라가는 위치의 주소에 따라, 변수나 함수의 주소가 바뀌게 될텐데 링커와 로더가 이를 어떻게 처리하는지 설명하시오. 
+
+Linker: (5 points) 
+- Each relocatable file has its own address space. Linker merges their multiple address space into monolithic address space. Dynamic linker binds shared libraries at runtime. 
+
+Loader: (5 points) 
+- It maps contiguous chunks of the executable file to virtual address space and creates memory image (stack, heap, code, data), using segment header table. 
+
+2. Global variable을 사용했을 때, 생기는 문제점과 해결방안을 제시하시오. 
+
+Problem: (5 points) 
+- There can be naming conflicts. If there are only ... 
+
+Solution: (4~5 points) 
+- If a global variable is used within a file, it's a solution to use static keyword. ... 
+- ... 
+
+3. Setjmp()/longjmp()는 언제 사용되는지 설명하시오. 
+
+- setjmp 설명 (2.5 points) 
+
+- longjmp 설명 (2.5 points) 
+- When non local jump is needed, because normal jmp can't jump to other functions without call-return sequence. ... (5 points) 
+
+4. Library interpositioning을 runtime에 하려면 어떤 식으로 해야하는 지 설명하시오. 
+
+Make shared library wrapping existing library. And set the LD_PRELOAD environment variable to libdl.so and your shared library path. This process tells the dynamic linker to resolve unresolved library reference by looking in your shared library path first. 
+
+5. Class A와 Class B IP address가 어떻게 다른지 설명하시오. 
+
+Prefix 5점, # Networks and host address 5점. 
+
+6. Zombie process 어떻게 생기는지, 이를 어떻게 방지할 수 있는지 설명하시오. 
+
+How: (5 points) 
+- When a child dies before its parent dies and the child isn't reaped ... 
+
+Solution: (5 points) 
+- Parent exis afret parent reaps all its children. 
+- When child exis and parent process is still running, it's a solution to send killing signal (kill) to its parent. ... 
+
+7. 지금의 Linux에서는 여러 개의 시그널이 도착해도 이를 모두 처리하는 것은 불가능하다. 그 이유를 설명하고 어떻게 하면 모든 시그널을 받을 수 있겠는지 방법을 제시하시오. 
+
+Reason: (5 points) 
+1 bit라서 ... 
+Solution: ( 5points) 
+Queuing, Counting, ... 
+
+8. TLB의 역할은 무엇이고 왜 일반적인 cache보다 hit ratio가 높은지 설명하시오. 
+
+What: (5 points) 
+TLB is the cache of page table, neither instruction nor data. 
+Why: (5 points) 
+The TLB entry represents virtual page number. The range that causes TLB hit is the page size (4k). Every address within a page cause hit. On the other hand, the range that causes normal cache hit is the block (word) size (4 bytes). So TLB's hit ratio is higher ... 
+
+9. File I/O에서 short count란 무엇인지 언제 일어나는지 설명하시오. 
+
+What: (5 points) 
+When: (4~5 points) 
+두가지 이상 쓰면 5점 
+
+10. NAT와 PAT의 차이를 설명하시오. 
+
+Concurrent connection per IP. (NAT). NAT shares IP (5 points) 
+Concurrent connection per each port of each IP. (PAT) PAT shares IP and Port (5 points) 

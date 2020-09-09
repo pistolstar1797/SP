@@ -1,0 +1,259 @@
+1. 객관식 16문제 (개당0.5점, 총 8점)
+
+[2015-2] 기출과 거의 같음(cheating sheet만 잘 써가도 대부분은 맞을 수 있을 것이다.)
+
+2. Linking and Loading(18점)
+
+a) ELF에 포함되는 파일 형식 3가지를 쓰시오.(4점)
+
+- Executable Object File(따로 형식 지정자 없음), Relocatable Object File(.o), Shared Object File(.so)
+
+b) ELF의 fullname과 의미를 쓰시오.(6점)
+
+- Executable and Linkable Format 의 약자, Standard binary format for object files
+
+c) ELF format을 구성하고 있는 section 중 5가지를 쓰고 각 section에 무엇이 있는지도 쓰시오.(8점)
+
+- Elf header
+ Word size, byte ordering, file type (.o, exec, .so), machine type, etc.
+
+- Segment header table
+ Page size, virtual addresses memory segments(sections), segment sizes.
+
+- .text section
+ Code
+
+- .rodata section
+ Read only data: jump tables, ...
+
+- .data section
+ Initialized global variables
+
+- .bss section
+ Uninitialized global variables
+ “Block Started by Symbol”
+ “Better Save Space”
+ Has section header but occupies no space
+
+- .symtabsection
+ Symbol table
+ Procedure and static variable names
+ Section names and locations
+
+- .rel.text section
+ Relocation info for .text section
+ Addresses of instructions that will need to be modified in the executable
+ Instructions for modifying.
+
+- .rel.data section
+ Relocation info for .data section
+ Addresses of pointer data that will need to be modified in the merged executable
+
+- .debug section
+ Info for symbolic debugging (gcc-g)
+
+- Section header table
+ Offsets and sizes of each section
+
+이 중에서 5가지 골라 쓰면 됐음.
+
+3. Exceptional Control Flow - Signal Handling(6점)
+
+view sourceprint?
+01.
+pid_t pid;
+02.
+ 
+03.
+void f(void)
+04.
+{
+05.
+printf("{A}\n");
+06.
+}
+07.
+ 
+08.
+void g(void)
+09.
+{
+10.
+printf("{B}\n");
+11.
+}
+12.
+ 
+13.
+void h(int sig)
+14.
+{
+15.
+printf("{C}\n");
+16.
+kill(pid, SIGUSR1);
+17.
+}
+18.
+ 
+19.
+void i(int sig)
+20.
+{
+21.
+printf("{D}\n");
+22.
+exit (0);
+23.
+}
+24.
+ 
+25.
+void main() {
+26.
+signal(SIGUSR1, h);
+27.
+atexit(g);
+28.
+ 
+29.
+printf("{E}\n");
+30.
+ 
+31.
+if ((pid = fork()) == 0) {
+32.
+signal(SIGUSR1, i);
+33.
+kill(getppid(), SIGUSR1);
+34.
+while (1) {};
+35.
+} else {
+36.
+atexit(f);
+37.
+waitpid(pid, NULL, 0);
+38.
+}
+39.
+printf("{F}\n");
+40.
+}
+
+위 소스코드의 실행결과를 쓰시오.(사실상 2015-2 기출에서 1,2,3,4,5,6 -> A,B,C,D,E,F로 바꾼거)
+
+- ECDAFBA(모르겠으면 직접 실행해보자.)
+
+4. Symbol Resoulution & Relocation(20점)
+
+보기로 foo.c와 bar.c라는 소스코드가 주어져 있으며, symbol이 여러개 정의되어 있었다. (foo, bar, foobar 등, 이름이 헷갈려서 기억이 제대로 안남)
+
+a) Symbol table 표 채우기(8점)
+
+채워야 할 정보는 symbol 이름, symbol type, weak/strong, section, Remarks(symbol 에 대하여 추가적으로 쓰고 싶은 것을 쓰라 하셨다.)
+
+b) Symbol Resolution이 일어난 정보의 표 채우기(8점)
+
+총 8개의 Symbol Resolution이 있었던거 같다.
+
+채워야 할 정보는 Symbol Resolution이 일어난 코드상 위치, Symbol Resolution으로 인해 바뀐 Symbol Reference의 위치, 그로 인해 바뀐 변수의 type(?)이었나
+
+c) 표가 하나 주어졌다. 위 소스코드의 ELF중 일부를 보여주고 Symbol Resolution이 일어난 곳에 Instruction에서 그 symbol의 주소와 관련된 부분에 빈칸을 뚫고 거기 들어갈 내용을 맞추는 거였다.(4점)
+
+- 총 2개가 주어졌는데, 하나는 Absolute address를 사용했고, 다른 하나는 PC-relative address를 사용함.(하나는 직접 주소값 쓰면 되고, 나머지 하나는 PC register와 offset으로 표현하면 된듯)
+
+5. Linking and Loading(8점)
+
+one.c two.c three.c four.c라는 소스 코드가 주어짐
+
+one.c
+view sourceprint?
+1.
+int a[1000000]={0};
+2.
+ 
+3.
+int main()
+4.
+{
+5.
+a[0] = 1;
+6.
+}
+
+two.c
+view sourceprint?
+1.
+int a[1000000];
+2.
+ 
+3.
+int main()
+4.
+{
+5.
+a[0] = 2;
+6.
+}
+
+three.c
+view sourceprint?
+1.
+int main()
+2.
+{
+3.
+int a[1000000]={1};
+4.
+}
+
+four.c
+view sourceprint?
+1.
+int main()
+2.
+{
+3.
+int *A=calloc(1000000,sizeof(int));
+4.
+}
+
+a) 각 소스코드를 실행시키면 a는 어디에 저장되어 있는가?(4점)
+
+one -> .data (global initialized)
+two -> .bss (global uninitialized)
+three -> stack (local)
+four -> heap (malloc,calloc,realloc)
+
+b) 각 소스코드로 부터 만들어진 ELF파일의 크기와 프로그램 실행속도를 비교하고 그 이유를 서술하시오.(크기나 속도가 비슷한 경우 ~를 써도 됨)(4점)
+
+- ELF크기: one > three ~ four > two (이유는 one(.data)는 저 배열이 통째로 들어가고, two(.bss)는 section header는 있는데 크기를 안 먹는다고 했고, three, four는 Linker에서 Library 함수를 추가해줘서 그런듯)
+
+- 실행속도: one > three ~ four > two or one > three ~ four ~ two (이유는 아마 프로그램 크기가 크면 Loading 속도가 느려지니까 one은 그럴거 같고, three, four, two는 뭐 때문이었는지 기억이 안난다(ㅈㅅ).) 
+
+(저 1000000이라는 숫자는 변수를 넣어놓고 #define을 썼던거 같다.)
+
+6. Virtual Memory Management + Exceptional Control Flow (20점)
+
+CPU가 page 참조를 위해 MMU에게 요청을 했더니 알고보니 그 page는 physical memory에 없고 하드디스크 내에 있었다(Page Fault). 이때, 일어나는 모든 일을 최대한 자세하게 적으시오(Page fault가 일어나는 과정부터 Page fault Handling이 끝날 때까지 모든 과정을 전부 적으면 됨).
+
+- 답은 너무 길어서 생략. 이번 필기 시험중에서 가장 답이 길었다. 한 페이지 통째로 답을 쓴거 같음.
+
+7. Dynamic Memory Allocation(10점)
+
+a) Memory Allocator의 Free List 구현 방식중 Implicit Free List와 Explicit Free List의 차이점을 설명하시오.(2점)
+
+- Implicit Free List는 Block size만을 가지고 List를 형성하므로 모든 Block이 List에 포함되지만, Explicit은 Free block 내부의 payload중 일부를 다음 free block과 이전 free block의 주소를 담는데 사용하므로, 실제 free인 block만으로 List가 만들어진다.
+
+b) Implicit Free List와 Explicit Free List의 장단점을 비교하시오.(4점)
+
+- 장점: Implicit Free List는 구현이 단순하고, Explicit Free List는 성능(처리속도)가 빠르다.
+
+- 단점: Implicit Free List는 성능이 느리고, Explicit Free List는 구현이 복잡함(이게 맞을려나?)
+
+c) Garbage Collector 중 Mark and Sweep 방식을 설명하시오.(4점)
+
+- Mark: 주어진 root block에서 접근이 가능한 모든 block에 mark-bit을 set한다.
+
+- Sweep: List 전체를 훑으면서 mark-bit이 set되지 않은 block은 모두 free 시킨다.

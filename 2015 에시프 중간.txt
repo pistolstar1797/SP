@@ -1,0 +1,202 @@
+1. 객관식 16문제 (0.5pt each) (주의사항 : Mark all ~이 답이 한개인 경우가 많음)
+1. When returning from a syscall I_return is set to
+a. the previous instruction
+b. current instruction
+c. next instruction
+d. kernel doesn't return
+
+2. When returning from recoverable page fault
+a. the previous instruction
+b. current instruction
+c. next instruction
+d. kernel doesn't return
+
+3. When returning from illegal memory access
+a. the previous instruction
+b. current instruction
+c. next instruction
+d. kernel doesn't return
+
+4. While exec an exception handler, processor runs in
+a. stack mode
+b. kernel mode
+c. user mode
+d. mmu mode
+
+5. exception cause by the timer interrupt is 
+a. synch
+b. asynch
+
+6. Exception cause by syscall
+a. synch
+b. asynch
+
+7. exception caused by an illegal memory access
+a. synch
+b. asynch
+
+8. when invoking a syscall on linux args of calls via
+a. stack
+b. reg
+c. ~
+
+9. Mark all signals can neither be caught nor ignored
+(객관식입니다 보기가 생각안나서 그만) 
+10. What is the child process that has not been reaped
+
+11. Mark all syscalls that are called once but returns twice
+
+12. Mark all syscalls that never returns
+
+13. signal sent from parent process to child process
+a. goes through kernel
+b. directly ~
+
+14. signals received by a process
+(handling issue)
+
+15. Where are the page table located
+
+16. Mark all options that cannot use anonymous shared memory for interprocess communication
+a. parent-child
+b. sibling-sibling
+c. unrelated processes
+d. parent-grandchildren
+
+2. PIC. 서술형 (8pt)
+A. Explain the difference between absolute and PC-relative relocation
+B. PIC uses which form of addressing?
+C. In what common situation in the linux OS is PIC useful?
+- shared libraries 
+- address randomization
+- running several programs on system that do not support virtual memory
+D. When generating PIC what is the main difficulty on IA32?
+- IA32 does not allow access to the EIP directly which complicates position independent accesses to global data
+
+3. Symbol Resolution (22pt)
+A. symbol 표 채우기
+weak/strong symbol
+type(external, global, local, -)
+section(.data, .text, .bss, -)
+Remarks(for - symbols)
+
+B. 표 채우기 : Relocation / Byte Position / Type / Reference
+
+C. Compute the value of each relocation in the linked executable.
+
+4. VMM 서술형 (12pt)
+A. Explain why nested PT are necessary for 64-bit address space
+- without each PT would require 2^64/4KB * 8byte = 32PB
+B.
+(a) what is the minimal amount of memory required by the pPT to map the virtual address space 1000-2fff, 8000-8fff
+(b) How many Physical pages are required at most to map the VA space?
+- 7 pages tables with each 28KB in total
+
+C. What is the maximum number of memory accesses required to translate a VA into a PA? explain
+- 4 Access (miss in TLB, for entries in each of 4 level)
+
+D. What is the name of the HW block ~ (write fullname)
+- TLB(Translation Lookaside Buffer)
+
+5. (12pt)
+one.c : int A[N] = {1}; (global)
+two.c : int A[N]; (global)
+three.c : int A[N] = {1}; (local)
+four.c : int *A = calloc(N, 4);
+
+A. section of A[N]?
+one : .data
+two : .bss
+three : stack
+four : heap
+
+B. program size?
+- one >> three = four > two (one >> three = four = two)
+
+C. program runtime(slowest)?
+- one > three = four > two (one > three = four = two)
+
+6. VA translation (TLB, PTE 등등 주고 VA->PA 하는 굵직한 문제) (12pt)
+
+7. 실행결과를 쓰시오 (12pt)
+view sourceprint?
+01.
+pid_t pid;
+02.
+ 
+03.
+void f(void)
+04.
+{
+05.
+printf("{1}\n");
+06.
+}
+07.
+ 
+08.
+void g(void)
+09.
+{
+10.
+printf("{2}\n");
+11.
+}
+12.
+ 
+13.
+void h(int sig)
+14.
+{
+15.
+printf("{3}\n");
+16.
+kill(pid, SIGUSR1);
+17.
+}
+18.
+ 
+19.
+void i(int sig)
+20.
+{
+21.
+printf("{4}\n");
+22.
+exit (0);
+23.
+}
+24.
+ 
+25.
+void main() {
+26.
+signal(SIGUSR1, h);
+27.
+atexit(f);
+28.
+ 
+29.
+printf("{5}\n");
+30.
+ 
+31.
+if ((pid = fork()) == 0) {
+32.
+signal(SIGUSR1, i);
+33.
+kill(getppid(), SIGUSR1);
+34.
+while (1) {};
+35.
+} else {
+36.
+atexit(g);
+37.
+waitpid(pid, NULL, 0);
+38.
+}
+39.
+printf("{6}\n");
+40.
+}
